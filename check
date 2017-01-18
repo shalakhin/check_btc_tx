@@ -5,10 +5,18 @@ import requests
 import decimal
 
 
+__author__ = 'Olexandr Shalakhin'
+__version__ = '0.1.0'
+__maintainer__ = 'Olexandr Shalakhin'
+__email__ = 'olexandr@shalakhin.com'
+__status__ = 'Prototype'
+
+
 @click.command()
 @click.argument('addr')
 def check(addr):
-    r = requests.post("https://www.blockonomics.co/api/searchhistory", data=json.dumps({"addr": addr}))
+    r = requests.post("https://www.blockonomics.co/api/searchhistory",
+                      data=json.dumps({"addr": addr}))
     try:
         history_data = json.loads(r.content.decode('utf-8'))['history'][0]
     except:
@@ -16,12 +24,14 @@ def check(addr):
         return
     txid = history_data['txid']
     click.echo('TXID:\t%s' % txid)
-    r = requests.get("https://www.blockonomics.co/api/tx_detail", params={'txid': txid})
+    r = requests.get("https://www.blockonomics.co/api/tx_detail",
+                     params={'txid': txid})
     tx_detail = json.loads(r.content.decode('utf-8'))
     click.echo('Status:\t%s' % tx_detail['status'])
     for item in tx_detail['vout']:
         if item['address'] == addr:
-            amount = decimal.Decimal(item['value'] * decimal.Decimal(0.00000001))
+            amount = decimal.Decimal(
+                    item['value'] * decimal.Decimal(0.00000001))
             click.echo('Amount:\t%s' % round(amount, 8))
 
 
